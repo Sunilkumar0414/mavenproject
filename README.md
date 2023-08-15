@@ -117,6 +117,55 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+
+            pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/your-username/your-repo.git']]])
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'npm install' // Example: For a Node.js application
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'npm test' // Example: Run tests using npm
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh 'npm build' // Example: Create a build artifact
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'npm deploy' // Example: Deploy to a testing environment
+            }
+        }
+
+        stage('Deploy to Production') {
+            when {
+                expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+            }
+            steps {
+                sh 'npm deploy production' // Example: Deploy to production
+            }
+        }
+    }
+}
+Remember to adjust the commands and stages according to your application's technology stack and deployment process.
+
+Please note that this is a simplified example, and real-world projects might require additional considerations such as environment configuration, secret management, error handling, and scaling strategies.
+
                 // Checkout the code from the repository
                 checkout scm
             }
